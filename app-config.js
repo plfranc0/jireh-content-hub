@@ -6,7 +6,7 @@ window.HUB_CONFIG = {
   /* Google Cloud OAuth 2.0 Web client ID for the Drive upload (NOT the Firebase apiKey).
      Google Cloud console > APIs & Services > Credentials > the "Content Hub web" client.
      null until Patrick pastes it; the upload button explains itself until then. */
-  googleClientId: null,
+  googleClientId: "912348829745-ptkn90f7gpmcv4fpigma3c3vjf95ugsf.apps.googleusercontent.com",
 
   /* Drive scope. "drive.file" is the narrow one (files this app creates). If the spike shows Google
      refusing to create files inside an existing folder with it, switch to the full "drive" scope. */
