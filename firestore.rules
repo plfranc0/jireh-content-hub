@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Everyone who may open the Hub. Lowercase. Keep in step with roles in app-config.js.
+    function allowed() {
+      return request.auth != null &&
+        request.auth.token.email.lower() in [
+          'patrick@focalpointmarketingagency.com',
+          'jireh@thecomptrading.com',
+          'jirehtrades@gmail.com',
+          'contact.tushar.theoret@gmail.com',
+          'samridhibobal05@gmail.com'
+        ];
+    }
+    function isAdmin() {
+      return request.auth != null &&
+        request.auth.token.email.lower() == 'patrick@focalpointmarketingagency.com';
+    }
+
+    // Content cards. Anyone on the list can read and update (status moves, footage, notes).
+    // Only Patrick creates or deletes cards; the seed script writes as a service account (bypasses rules).
+    match /scripts/{id} {
+      allow read, update: if allowed();
+      allow create, delete: if isAdmin();
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

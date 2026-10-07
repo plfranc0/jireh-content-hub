@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Jireh Trades Content Hub</title>
+<link rel="icon" href="assets/mark.png">
+<link rel="apple-touch-icon" href="assets/mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080C0F; --panel:#0D1217; --panel2:#111820; --border:#1A2028; --text:#EAF0F3; --muted:#6E8898;
+  --green:#2FC04B; --green-dim:rgba(47,192,75,.14); --red:#EF5350; --amber:#F5B942; --blue:#4FA3FF;
+  --radius:14px; --gutter:16px; --head:56px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{padding-bottom:env(safe-area-inset-bottom)}
+a{color:var(--green)}
+button{font:inherit;cursor:pointer}
+h1,h2,h3{font-family:"Bebas Neue",Inter,sans-serif;font-weight:400;letter-spacing:.02em;margin:0}
+h1{font-size:28px;line-height:1}
+h2{font-size:24px}
+h3{font-size:20px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.hidden{display:none !important}
+
+/* header */
+header{position:sticky;top:0;z-index:20;height:var(--head);display:flex;align-items:center;gap:12px;padding:0 var(--gutter);background:rgba(8,12,15,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+header img{height:26px;filter:drop-shadow(0 0 10px rgba(47,192,75,.45))}
+header .title{font-family:"Bebas Neue";font-size:20px;letter-spacing:.04em;color:var(--text);white-space:nowrap}
+header .spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:var(--panel);font-size:13px;color:var(--muted);max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip b{color:var(--text);font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text);font-weight:600;font-size:14px;line-height:1;text-decoration:none}
+.btn:active{transform:translateY(1px)}
+@media(max-width:560px){header .chip{display:none}}
+.btn.primary{background:var(--green);border-color:var(--green);color:#06120a;box-shadow:0 0 18px rgba(47,192,75,.35)}
+.btn.ghost{background:transparent}
+.btn.danger{border-color:rgba(239,83,80,.5);color:var(--red)}
+.btn.sm{padding:7px 10px;font-size:13px}
+.btn.block{width:100%;padding:14px}
+.btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+
+/* tabs */
+nav.tabs{display:flex;gap:6px;padding:10px var(--gutter);overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:var(--head);z-index:19}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:0 0 auto;padding:9px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);font-weight:600;font-size:14px}
+nav.tabs button.on{background:var(--green-dim);border-color:rgba(47,192,75,.5);color:var(--green)}
+nav.tabs .count{margin-left:6px;font-size:12px;opacity:.9}
+
+main{padding:16px var(--gutter) 40px;max-width:1100px;margin:0 auto}
+.banner{padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--panel);margin-bottom:14px;font-size:14px}
+.banner.warn{border-color:rgba(245,185,66,.5)}
+.banner.err{border-color:rgba(239,83,80,.6)}
+.banner.ok{border-color:rgba(47,192,75,.5)}
+
+/* sign-in */
+.gate{max-width:420px;margin:40px auto;text-align:center;padding:28px 22px;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel)}
+.gate img{height:40px;margin-bottom:14px;filter:drop-shadow(0 0 14px rgba(47,192,75,.45))}
+.gate p{color:var(--muted);font-size:14px}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:8px;min-height:120px;transition:border-color .15s}
+.card:hover{border-color:rgba(47,192,75,.45)}
+.card .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border);color:var(--muted)}
+.tag.green{color:var(--green);border-color:rgba(47,192,75,.4);background:var(--green-dim)}
+.tag.red{color:var(--red);border-color:rgba(239,83,80,.4);background:rgba(239,83,80,.12)}
+.tag.amber{color:var(--amber);border-color:rgba(245,185,66,.4);background:rgba(245,185,66,.12)}
+.tag.blue{color:var(--blue);border-color:rgba(79,163,255,.4);background:rgba(79,163,255,.12)}
+.card h3{font-family:Inter;font-weight:600;font-size:16px;line-height:1.3}
+.card .hook{color:var(--muted);font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:auto}
+.section-h{display:flex;align-items:baseline;gap:12px;margin:18px 0 10px}
+.section-h h2{flex:1}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:var(--radius)}
+
+/* film queue */
+.hero{display:flex;gap:14px;align-items:center;padding:16px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(47,192,75,.14),rgba(47,192,75,.02));border:1px solid rgba(47,192,75,.3);margin-bottom:14px}
+.hero .num{font-family:"Bebas Neue";font-size:52px;line-height:1;color:var(--green)}
+.hero .txt{font-size:14px;color:var(--muted)}
+.hero .txt b{color:var(--text);font-size:16px;display:block}
+.checklist{padding:0;margin:0;list-style:none;display:grid;gap:6px}
+.checklist li{display:flex;gap:10px;font-size:14px;color:var(--muted)}
+.checklist li::before{content:"";flex:0 0 8px;height:8px;margin-top:8px;border-radius:50%;background:var(--green)}
+details.panel{border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);padding:12px 14px;margin-bottom:14px}
+details.panel summary{cursor:pointer;font-weight:600;font-size:14px;list-style:none;display:flex;align-items:center}
+details.panel summary::-webkit-details-marker{display:none}
+details.panel summary::after{content:"+";margin-left:auto;color:var(--muted);font-size:18px}
+details.panel[open] summary::after{content:"–"}
+details.panel .body{margin-top:10px}
+
+/* pipeline */
+.board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity}
+.col{flex:0 0 280px;scroll-snap-align:start;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;gap:8px;max-height:72vh}
+.col .colh{display:flex;align-items:center;gap:8px;padding:4px 4px 8px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+.col .colh .n{margin-left:auto;color:var(--muted);font-weight:600}
+.col .cards{overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.col .card{min-height:auto;padding:12px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.kpi .v{font-family:"Bebas Neue";font-size:34px;line-height:1}
+.kpi .v.ok{color:var(--green)} .kpi .v.low{color:var(--amber)}
+.kpi .l{font-size:12px;color:var(--muted);margin-top:2px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input,.toolbar select{font:inherit;font-size:14px;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text)}
+
+/* resources */
+.res-group{margin-bottom:18px}
+.res-group h3{margin-bottom:8px;color:var(--muted);font-size:16px;letter-spacing:.08em}
+.res-list{display:grid;gap:8px}
+.res-list a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--panel);color:var(--text);text-decoration:none;font-size:14px}
+.res-list a::after{content:"↗";margin-left:auto;color:var(--muted)}
+
+/* drawer (card detail) */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:30;display:none}
+.overlay.on{display:block}
+.drawer{position:fixed;z-index:31;inset:0;background:var(--bg);display:none;flex-direction:column}
+.drawer.on{display:flex}
+@media(min-width:900px){.drawer{inset:0 0 0 auto;width:min(760px,92vw);border-left:1px solid var(--border);box-shadow:-20px 0 60px rgba(0,0,0,.5)}}
+.drawer .dh{display:flex;align-items:center;gap:10px;padding:10px var(--gutter);border-bottom:1px solid var(--border);min-height:var(--head)}
+.drawer .dh h2{flex:1;font-family:Inter;font-weight:600;font-size:17px;line-height:1.3}
+.drawer .db{overflow-y:auto;padding:16px var(--gutter) 120px;-webkit-overflow-scrolling:touch}
+.drawer .df{position:sticky;bottom:0;background:rgba(8,12,15,.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:12px var(--gutter);display:flex;gap:8px;flex-wrap:wrap}
+.blk{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.blk h3{font-size:13px;letter-spacing:.1em;color:var(--muted);font-family:Inter;font-weight:700;text-transform:uppercase;margin-bottom:10px}
+.hooks{display:grid;gap:8px}
+.hook-row{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);font-size:16px;line-height:1.4}
+.hook-row .n{font-family:"Bebas Neue";font-size:20px;color:var(--green);flex:0 0 22px}
+.script{font-size:17px;line-height:1.6}
+.script p{margin:0 0 12px}
+.script ul{margin:0 0 12px;padding-left:20px}
+.script h4{margin:14px 0 6px;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.script strong{color:#fff}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:6px 12px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.embed{position:relative;width:100%;max-width:360px;aspect-ratio:9/16;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#000}
+.embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.embed.wide{max-width:100%;aspect-ratio:16/9}
+.files{display:grid;gap:6px}
+.file{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);font-size:14px}
+.file a{color:var(--text);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.file .sz{color:var(--muted);font-size:12px}
+.prog{height:6px;border-radius:3px;background:var(--panel2);overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;background:var(--green);width:0;transition:width .2s}
+.up-row{padding:10px 12px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);font-size:13px;margin-bottom:6px}
+.up-row.err{border-color:rgba(239,83,80,.6);color:var(--red)}
+.dropzone{border:2px dashed rgba(47,192,75,.45);border-radius:var(--radius);padding:18px;text-align:center;background:var(--green-dim)}
+.dropzone p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+input[type=file]{display:none}
+.notes{display:grid;gap:8px}
+.note{padding:10px 12px;border-radius:10px;background:var(--panel2);border:1px solid var(--border);font-size:14px}
+.note .by{font-size:12px;color:var(--muted);margin-bottom:3px}
+.noteform{display:flex;gap:8px;margin-top:10px}
+.noteform input{flex:1;font:inherit;font-size:14px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text)}
+select.status{font:inherit;font-size:14px;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text)}
+
+/* prompter */
+.prompter{position:fixed;inset:0;z-index:40;background:#000;color:#fff;display:none;flex-direction:column}
+.prompter.on{display:flex}
+.prompter .ph{display:flex;gap:8px;align-items:center;padding:10px var(--gutter);border-bottom:1px solid #222}
+.prompter .pb{flex:1;overflow-y:auto;padding:30px var(--gutter) 60vh;font-size:30px;line-height:1.45;font-weight:500}
+.prompter .pb .hk{color:var(--green);margin-bottom:24px}
+.prompter .pb p{margin:0 0 20px}
+.prompter .pb ul{padding-left:28px}
+.prompter .pb h4{color:var(--green);font-size:.6em;letter-spacing:.1em;text-transform:uppercase;margin:24px 0 8px}
+
+/* editor form */
+.form{display:grid;gap:12px}
+.form label{display:grid;gap:5px;font-size:13px;color:var(--muted);font-weight:600}
+.form input,.form textarea,.form select{font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text);width:100%}
+.form textarea{min-height:110px;resize:vertical;line-height:1.5}
+.form textarea.tall{min-height:260px}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.form .row{grid-template-columns:1fr}}
+.form .help{font-weight:400;color:var(--muted);font-size:12px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:12px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:none;max-width:92vw}
+.toast.on{display:block}
+.toast.err{border-color:rgba(239,83,80,.6)}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="assets/wordmark.png" alt="The Comp">
+  <span class="title">CONTENT HUB</span>
+  <span class="spacer"></span>
+  <span id="user-chip" class="chip hidden"></span>
+  <button id="auth-btn" class="btn sm">Sign in</button>
+</header>
+
+<nav class="tabs hidden" id="tabs">
+  <button data-view="queue" id="tab-queue">Film Queue<span class="count" id="queue-count"></span></button>
+  <button data-view="pipeline" id="tab-pipeline">Pipeline</button>
+  <button data-view="resources" id="tab-resources">Resources</button>
+</nav>
+
+<main>
+  <div id="banner"></div>
+
+  <!-- sign-in gate -->
+  <section id="view-gate">
+    <div class="gate">
+      <img src="assets/wordmark.png" alt="The Comp">
+      <h1>Jireh Trades Content Hub</h1>
+      <p>Scripts to film, footage drops, edits in review. Sign in with the Google account Patrick added.</p>
+      <button class="btn primary block" onclick="hubSignIn()">Sign in with Google</button>
+      <p id="gate-note" class="small"></p>
+    </div>
+  </section>
+
+  <!-- film queue -->
+  <section id="view-queue" class="hidden">
+    <div class="hero">
+      <div class="num" id="queue-num">0</div>
+      <div class="txt"><b id="queue-head">to film</b><span id="queue-sub">Tap a card. Read the hooks and the script, film, upload from the card, then Mark filmed.</span></div>
+    </div>
+    <details class="panel"><summary>Before you hit record</summary><div class="body"><ul class="checklist" id="film-checklist"></ul></div></details>
+    <div class="section-h"><h2>Ready to film</h2><span class="muted small">Highest priority first</span></div>
+    <div class="grid" id="queue-grid"></div>
+    <div class="section-h" style="margin-top:28px"><h2>Filmed, with the editor</h2></div>
+    <div class="grid" id="queue-done-grid"></div>
+  </section>
+
+  <!-- pipeline -->
+  <section id="view-pipeline" class="hidden">
+    <div class="kpis" id="kpis"></div>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search titles and hooks">
+      <select id="filter-format"><option value="">All formats</option><option value="reel">Reels</option><option value="carousel">Carousels</option><option value="story">Stories</option><option value="youtube">YouTube</option></select>
+      <span class="spacer" style="flex:1"></span>
+      <button id="new-btn" class="btn primary sm hidden" onclick="openEditor(null)">+ New script</button>
+    </div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- resources -->
+  <section id="view-resources" class="hidden">
+    <div id="res"></div>
+  </section>
+</main>
+
+<!-- card detail drawer -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="dh">
+    <button class="btn sm ghost" onclick="closeDrawer()">← Back</button>
+    <h2 id="d-title"></h2>
+    <button class="btn sm ghost" title="Copy a link to this card" onclick="copyLink()">Link</button>
+    <button class="btn sm hidden" id="d-edit" onclick="openEditor(current)">Edit</button>
+  </div>
+  <div class="db" id="d-body"></div>
+  <div class="df" id="d-foot"></div>
+</div>
+
+<!-- teleprompter -->
+<div class="prompter" id="prompter">
+  <div class="ph">
+    <button class="btn sm" onclick="closePrompter()">Close</button>
+    <span class="spacer" style="flex:1"></span>
+    <button class="btn sm" onclick="pFont(-3)">A−</button>
+    <button class="btn sm" onclick="pFont(3)">A+</button>
+    <button class="btn sm" id="p-scroll" onclick="pScroll()">Auto-scroll</button>
+  </div>
+  <div class="pb" id="p-body"></div>
+</div>
+
+<!-- editor drawer (admin) -->
+<div class="drawer" id="editor">
+  <div class="dh">
+    <button class="btn sm ghost" onclick="closeEditor()">Cancel</button>
+    <h2 id="e-title">New script</h2>
+    <button class="btn sm primary" onclick="saveEditor()">Save</button>
+  </div>
+  <div class="db">
+    <form class="form" id="e-form" onsubmit="return false">
+      <label>Title <input name="title" required placeholder="e.g. The worst revenge trade is the one that wins"></label>
+      <div class="row">
+        <label>Format <select name="format"><option value="reel">Reel</option><option value="carousel">Carousel</option><option value="story">Story sequence</option><option value="youtube">YouTube</option></select></label>
+        <label>Status <select name="status" id="e-status"></select></label>
+      </div>
+      <div class="row">
+        <label>Weekly KPI bucket <select name="kpi"><option value="">Not counted</option><option value="storytelling">Storytelling</option><option value="tof">Top of funnel (speedy value)</option><option value="explanation">Explanation</option></select></label>
+        <label>Priority <select name="priority"><option value="2">Normal</option><option value="1">High</option><option value="3">Low</option></select></label>
+      </div>
+      <div class="row">
+        <label>Film by <input name="filmDate" type="date"></label>
+        <label>Post date <input name="postDate" type="date"></label>
+      </div>
+      <label>Hook 1 <input name="hook1" placeholder="The line that opens the video"></label>
+      <label>Hook 2 <input name="hook2"></label>
+      <label>Hook 3 <input name="hook3"></label>
+      <label>Script <span class="help">Plain text. Blank line = new paragraph. Lines starting with "- " become bullets. **bold** works. "### Heading" makes a section label.</span><textarea name="body" class="tall"></textarea></label>
+      <label>Example to match (Instagram reel, YouTube, or Drive link) <input name="exampleUrl" type="url" placeholder="https://www.instagram.com/reel/..."></label>
+      <label>Comment keyword (ManyChat) <input name="keyword" placeholder="e.g. PROFITS"></label>
+      <div class="row">
+        <label>Location <input name="location" placeholder="In studio / green wall / outside"></label>
+        <label>Estimated minutes to film <input name="minutes" type="number" min="1" placeholder="10"></label>
+      </div>
+      <label>Wardrobe and props <input name="props" placeholder="Plain tee, no hat; laptop open on the chart"></label>
+      <label>B-roll to grab while filming <textarea name="broll" placeholder="One per line"></textarea></label>
+      <label>Music note <input name="music" placeholder="Original audio only unless Patrick says otherwise"></label>
+      <label>Notes for the editor <textarea name="editorNotes" placeholder="Green screen chart at 0:12, use the second hook as the cover"></textarea></label>
+      <div id="e-danger" class="hidden" style="margin-top:10px"><button type="button" class="btn danger sm" onclick="deleteCurrent()">Delete this card</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app-config.js"></script>
+<script src="firebase-config.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+/* ───────────────────────── shared helpers (plain script so onclick= works) ───────────────────────── */
+var CFG=window.HUB_CONFIG;
+var STATUSES=[
+  {id:"idea",label:"Idea",tag:""},
+  {id:"scripting",label:"Scripting",tag:""},
+  {id:"ready",label:"Ready to film",tag:"green"},
+  {id:"filmed",label:"Filmed",tag:"blue"},
+  {id:"editing",label:"Editing",tag:"amber"},
+  {id:"review",label:"Review",tag:"amber"},
+  {id:"scheduled",label:"Scheduled",tag:"green"},
+  {id:"posted",label:"Posted",tag:""}
+];
+var FORMAT_LABEL={reel:"Reel",carousel:"Carousel",story:"Story",youtube:"YouTube"};
+var KPI_LABEL={storytelling:"Storytelling",tof:"Top of funnel",explanation:"Explanation"};
+var current=null, cards=[], me=null, role=null, view=null;
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function statusOf(id){return STATUSES.find(function(s){return s.id===id;})||STATUSES[0];}
+function toast(msg,err){var t=document.getElementById("toast");t.textContent=msg;t.className="toast on"+(err?" err":"");clearTimeout(t._h);t._h=setTimeout(function(){t.className="toast";},err?7000:3000);}
+function fmtSize(b){if(!b&&b!==0)return"";if(b<1e6)return Math.round(b/1e3)+" KB";if(b<1e9)return(b/1e6).toFixed(1)+" MB";return(b/1e9).toFixed(2)+" GB";}
+function fmtDate(iso){if(!iso)return"";var p=iso.split("-");if(p.length<3)return iso;var d=new Date(+p[0],+p[1]-1,+p[2]);return d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});}
+function slugify(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60)||"untitled";}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function weekRange(){var d=new Date();var day=(d.getDay()+6)%7;var mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()-day);var sun=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+6);function iso(x){return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");}return[iso(mon),iso(sun)];}
+
+/* markdown-lite: paragraphs, "- " bullets, **bold**, "### " labels */
+function md(src){
+  var lines=String(src||"").replace(/\r/g,"").split("\n"),out=[],para=[],list=[];
+  function flushP(){if(para.length){out.push("<p>"+inline(para.join(" "))+"</p>");para=[];}}
+  function flushL(){if(list.length){out.push("<ul>"+list.map(function(l){return"<li>"+inline(l)+"</li>";}).join("")+"</ul>");list=[];}}
+  function inline(t){return esc(t).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");}
+  lines.forEach(function(l){
+    var t=l.trim();
+    if(!t){flushP();flushL();return;}
+    if(/^#{1,4}\s+/.test(t)){flushP();flushL();out.push("<h4>"+inline(t.replace(/^#+\s+/,""))+"</h4>");return;}
+    if(/^[-*•]\s+/.test(t)){flushP();list.push(t.replace(/^[-*•]\s+/,""));return;}
+    flushL();para.push(t);
+  });
+  flushP();flushL();return out.join("");
+}
+function embedFor(url){
+  if(!url)return"";
+  var m;
+  if((m=url.match(/instagram\.com\/(?:reel|reels|p)\/([A-Za-z0-9_-]+)/)))return'<div class="embed"><iframe src="https://www.instagram.com/p/'+esc(m[1])+'/embed/" allowfullscreen loading="lazy"></iframe></div>';
+  if((m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|embed\/))([A-Za-z0-9_-]{6,})/)))return'<div class="embed'+(/shorts/.test(url)?"":" wide")+'"><iframe src="https://www.youtube.com/embed/'+esc(m[1])+'" allowfullscreen loading="lazy"></iframe></div>';
+  if((m=url.match(/drive\.google\.com\/file\/d\/([A-Za-z0-9_-]+)/)))return'<div class="embed wide"><iframe src="https://drive.google.com/file/d/'+esc(m[1])+'/preview" allow="autoplay" loading="lazy"></iframe></div>';
+  return"";
+}
+
+/* ───────────────────────── views ───────────────────────── */
+function showView(v){
+  view=v;
+  ["gate","queue","pipeline","resources"].forEach(function(id){document.getElementById("view-"+id).classList.toggle("hidden",id!==v);});
+  document.querySelectorAll("nav.tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.view===v);});
+  if(v!=="gate"&&!/^#card\//.test(location.hash))location.hash=v;
+  render();
+  openFromHash();
+}
+var hashOpened=false;
+function openFromHash(){
+  var m=(location.hash||"").match(/^#card\/([A-Za-z0-9_-]+)/);
+  if(!m||hashOpened||!cards.length)return;
+  hashOpened=true;openCard(m[1]);
+  var q=new URLSearchParams(location.search);
+  if(q.get("prompter")==="1")openPrompter();
+  if(q.get("edit")==="1")openEditor(m[1]);
+}
+window.addEventListener("hashchange",function(){hashOpened=false;var m=(location.hash||"").match(/^#card\/([A-Za-z0-9_-]+)/);if(m)openFromHash();});
+document.querySelectorAll("nav.tabs button").forEach(function(b){b.onclick=function(){showView(b.dataset.view);};});
+
+function sortCards(list){return list.slice().sort(function(a,b){return(a.priority||2)-(b.priority||2)||String(a.postDate||"9").localeCompare(String(b.postDate||"9"))||String(a.title).localeCompare(String(b.title));});}
+function cardHtml(c,compact){
+  var st=statusOf(c.status);
+  var hook=(c.hooks||[]).find(Boolean)||"";
+  var files=(c.footage||[]).length;
+  return'<div class="card" onclick="openCard(\''+esc(c.id)+'\')">'+
+    '<div class="top"><span class="tag '+st.tag+'">'+esc(st.label)+'</span><span class="tag">'+esc(FORMAT_LABEL[c.format]||c.format||"")+'</span>'+(c.priority===1?'<span class="tag red">High</span>':"")+'</div>'+
+    '<h3>'+esc(c.title)+'</h3>'+(hook&&!compact?'<div class="hook">'+esc(hook)+'</div>':"")+
+    '<div class="meta">'+(c.filmDate?'<span>Film by '+esc(fmtDate(c.filmDate))+'</span>':"")+(c.postDate?'<span>Post '+esc(fmtDate(c.postDate))+'</span>':"")+(c.minutes?'<span>~'+esc(c.minutes)+' min</span>':"")+(files?'<span>'+files+' file'+(files>1?"s":"")+'</span>':"")+'</div>'+
+  '</div>';
+}
+function render(){
+  if(!me)return;
+  var ready=sortCards(cards.filter(function(c){return c.status==="ready";}));
+  document.getElementById("queue-count").textContent=ready.length?ready.length:"";
+  if(view==="queue"){
+    document.getElementById("queue-num").textContent=ready.length;
+    document.getElementById("queue-head").textContent=ready.length===1?"script ready to film":"scripts ready to film";
+    var g=document.getElementById("queue-grid");
+    g.innerHTML=ready.length?ready.map(function(c){return cardHtml(c);}).join(""):'<div class="empty">Nothing in the queue. Patrick adds scripts here; you will see them the moment they are marked Ready to film.</div>';
+    var done=sortCards(cards.filter(function(c){return["filmed","editing","review"].indexOf(c.status)>=0;}));
+    document.getElementById("queue-done-grid").innerHTML=done.length?done.map(function(c){return cardHtml(c,true);}).join(""):'<div class="empty">Nothing filmed yet this cycle.</div>';
+    document.getElementById("film-checklist").innerHTML=(CFG.filmChecklist||[]).map(function(t){return"<li>"+esc(t)+"</li>";}).join("");
+  }
+  if(view==="pipeline"){
+    var q=(document.getElementById("search").value||"").toLowerCase(),f=document.getElementById("filter-format").value;
+    var list=cards.filter(function(c){return(!f||c.format===f)&&(!q||(c.title+" "+(c.hooks||[]).join(" ")).toLowerCase().indexOf(q)>=0);});
+    var wk=weekRange(),counts={storytelling:0,tof:0,explanation:0};
+    cards.forEach(function(c){if(c.kpi&&counts[c.kpi]!=null&&c.postDate&&c.postDate>=wk[0]&&c.postDate<=wk[1]&&["scheduled","posted"].indexOf(c.status)>=0)counts[c.kpi]++;});
+    var targets={storytelling:2,tof:3,explanation:2};
+    document.getElementById("kpis").innerHTML=Object.keys(targets).map(function(k){return'<div class="kpi"><div class="v '+(counts[k]>=targets[k]?"ok":"low")+'">'+counts[k]+'<span class="muted" style="font-size:18px"> / '+targets[k]+'</span></div><div class="l">'+esc(KPI_LABEL[k])+' this week</div></div>';}).join("");
+    document.getElementById("board").innerHTML=STATUSES.map(function(s){
+      var items=sortCards(list.filter(function(c){return c.status===s.id;}));
+      return'<div class="col"><div class="colh"><span class="tag '+s.tag+'">'+esc(s.label)+'</span><span class="n">'+items.length+'</span></div><div class="cards">'+items.map(function(c){return cardHtml(c,true);}).join("")+'</div></div>';
+    }).join("");
+  }
+  if(view==="resources"){
+    document.getElementById("res").innerHTML=(CFG.resources||[]).map(function(g){
+      var items=g.items.filter(function(i){return i.who==="all"||i.who===role||role==="admin";});
+      if(!items.length)return"";
+      return'<div class="res-group"><h3>'+esc(g.group)+'</h3><div class="res-list">'+items.map(function(i){return'<a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.label)+'</a>';}).join("")+'</div></div>';
+    }).join("");
+  }
+  if(current){var c=cards.find(function(x){return x.id===current;});if(c)paintCard(c);}
+}
+document.getElementById("search").oninput=render;
+document.getElementById("filter-format").onchange=render;
+
+/* ───────────────────────── card detail ───────────────────────── */
+function openCard(id){current=id;var c=cards.find(function(x){return x.id===id;});if(!c){toast("That card does not exist (or you cannot see it).",true);return;}if(location.hash!=="#card/"+id)history.replaceState(null,"","#card/"+id);paintCard(c);document.getElementById("overlay").classList.add("on");document.getElementById("drawer").classList.add("on");document.getElementById("d-body").scrollTop=0;}
+function closeDrawer(){current=null;hashOpened=false;if(/^#card\//.test(location.hash))history.replaceState(null,"","#"+view);document.getElementById("overlay").classList.remove("on");document.getElementById("drawer").classList.remove("on");}
+function paintCard(c){
+  var st=statusOf(c.status);
+  document.getElementById("d-title").textContent=c.title;
+  document.getElementById("d-edit").classList.toggle("hidden",role!=="admin");
+  var hooks=(c.hooks||[]).filter(Boolean);
+  var h="";
+  h+='<div class="top" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><span class="tag '+st.tag+'">'+esc(st.label)+'</span><span class="tag">'+esc(FORMAT_LABEL[c.format]||"")+'</span>'+(c.kpi?'<span class="tag">'+esc(KPI_LABEL[c.kpi])+'</span>':"")+(c.priority===1?'<span class="tag red">High priority</span>':"")+'</div>';
+  if(hooks.length)h+='<div class="blk"><h3>Hooks (say the first line of each as its own take)</h3><div class="hooks">'+hooks.map(function(x,i){return'<div class="hook-row"><span class="n">'+(i+1)+'</span><span>'+esc(x)+'</span></div>';}).join("")+'</div></div>';
+  h+='<div class="blk"><h3>Script</h3><div class="script">'+(c.body?md(c.body):'<p class="muted">No script body yet.</p>')+'</div>'+(c.body||hooks.length?'<button class="btn block" style="margin-top:8px" onclick="openPrompter()">Open teleprompter</button>':"")+'</div>';
+  var ex=embedFor(c.exampleUrl);
+  if(c.exampleUrl)h+='<div class="blk"><h3>Example to match</h3>'+(ex||"")+'<p style="margin:8px 0 0"><a href="'+esc(c.exampleUrl)+'" target="_blank" rel="noopener">Open the example ↗</a></p></div>';
+  var kv=[];
+  if(c.location)kv.push(["Location",c.location]);
+  if(c.minutes)kv.push(["Time to film","about "+c.minutes+" min"]);
+  if(c.props)kv.push(["Wardrobe / props",c.props]);
+  if(c.broll)kv.push(["B-roll to grab",md(c.broll)]);
+  if(c.keyword)kv.push(["Comment keyword",'<b>'+esc(c.keyword)+'</b>']);
+  if(c.music)kv.push(["Music",c.music]);
+  if(c.filmDate)kv.push(["Film by",fmtDate(c.filmDate)]);
+  if(c.postDate)kv.push(["Post date",fmtDate(c.postDate)]);
+  if(kv.length)h+='<div class="blk"><h3>Filming notes</h3><dl class="kv">'+kv.map(function(r){return'<dt>'+esc(r[0])+'</dt><dd>'+(r[1].indexOf("<")===0?r[1]:esc(r[1]))+'</dd>';}).join("")+'</dl></div>';
+  if(c.editorNotes&&(role==="editor"||role==="admin"))h+='<div class="blk"><h3>Notes for the editor</h3><div class="script" style="font-size:15px">'+md(c.editorNotes)+'</div></div>';
+  /* footage */
+  var canUploadRaw=(role==="talent"||role==="admin")&&["ready","filmed","editing","review"].indexOf(c.status)>=0;
+  h+='<div class="blk"><h3>Raw footage'+(c.rawFolderId?' <a class="small" style="text-transform:none;letter-spacing:0;font-weight:500;margin-left:8px" href="https://drive.google.com/drive/folders/'+esc(c.rawFolderId)+'" target="_blank" rel="noopener">open folder ↗</a>':"")+'</h3>'+
+    fileList(c.footage)+
+    (canUploadRaw?uploader("raw",c.id):"")+'</div>';
+  /* finished */
+  var canUploadFin=(role==="editor"||role==="admin")&&["filmed","editing","review","scheduled","posted"].indexOf(c.status)>=0;
+  if((c.finished||[]).length||canUploadFin)h+='<div class="blk"><h3>Finished files'+(c.finishedFolderId?' <a class="small" style="text-transform:none;letter-spacing:0;font-weight:500;margin-left:8px" href="https://drive.google.com/drive/folders/'+esc(c.finishedFolderId)+'" target="_blank" rel="noopener">open folder ↗</a>':"")+'</h3>'+fileList(c.finished)+(canUploadFin?uploader("finished",c.id):"")+'</div>';
+  /* notes */
+  h+='<div class="blk"><h3>Notes</h3><div class="notes">'+((c.notes||[]).slice().reverse().map(function(n){return'<div class="note"><div class="by">'+esc(n.by)+' · '+esc(new Date(n.at).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))+'</div>'+esc(n.text)+'</div>';}).join("")||'<div class="muted small">No notes yet.</div>')+'</div><div class="noteform"><input id="note-input" placeholder="Leave a note for the team" onkeydown="if(event.key===\'Enter\')addNote()"><button class="btn sm" onclick="addNote()">Post</button></div></div>';
+  document.getElementById("d-body").innerHTML=h;
+  /* footer actions by role + status */
+  var f="";
+  if(role==="admin"){f+='<select class="status" onchange="setStatus(this.value)">'+STATUSES.map(function(s){return'<option value="'+s.id+'"'+(s.id===c.status?" selected":"")+'>'+esc(s.label)+'</option>';}).join("")+'</select>';}
+  if(role==="talent"&&c.status==="ready")f+='<button class="btn primary" style="flex:1" onclick="markFilmed()">Mark filmed</button>';
+  if(role==="talent"&&c.status==="filmed")f+='<span class="muted small" style="align-self:center">Filmed. The editor has it.</span>';
+  if(role==="editor"&&c.status==="filmed")f+='<button class="btn primary" style="flex:1" onclick="setStatus(\'editing\')">Start editing</button>';
+  if(role==="editor"&&c.status==="editing")f+='<button class="btn primary" style="flex:1" onclick="sendForReview()">Send for review</button>';
+  if(role==="editor"&&c.status==="review")f+='<span class="muted small" style="align-self:center">In review with Patrick.</span>';
+  document.getElementById("d-foot").innerHTML=f;
+  document.getElementById("d-foot").classList.toggle("hidden",!f);
+}
+function fileList(arr){arr=arr||[];if(!arr.length)return'<div class="muted small" style="margin-bottom:8px">No files yet.</div>';return'<div class="files" style="margin-bottom:10px">'+arr.map(function(x){return'<div class="file"><a href="https://drive.google.com/file/d/'+esc(x.id)+'/view" target="_blank" rel="noopener">'+esc(x.name)+'</a><span class="sz">'+esc(fmtSize(x.size))+(x.by?" · "+esc(x.by.split("@")[0]):"")+'</span></div>';}).join("")+'</div>';}
+function uploader(kind,id){
+  var label=kind==="raw"?"Upload footage from this phone":"Upload finished file";
+  if(!CFG.googleClientId)return'<div class="banner warn" style="margin:0">Upload is not switched on yet. Patrick adds the Google client ID in app-config.js (README, step 0). Until then, drop files into the Drive folder listed on the Resources tab.</div>';
+  return'<div id="up-'+kind+'"></div><label class="dropzone" for="file-'+kind+'"><span class="btn primary">'+label+'</span><p>'+(kind==="raw"?"Videos only. Big files are fine; the upload resumes if the connection drops.":"MP4, PNG, or a zip.")+'</p></label><input id="file-'+kind+'" type="file" '+(kind==="raw"?'accept="video/*,image/*"':"")+' multiple onchange="uploadFiles(this,\''+kind+'\',\''+esc(id)+'\')">';
+}
+
+function copyLink(){var u=location.origin+location.pathname+"#card/"+current;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){toast("Link copied. Anyone on the Hub can open it.");},function(){prompt("Copy this link:",u);});}
+
+/* ───────────────────────── teleprompter ───────────────────────── */
+var pSize=30,pTimer=null;
+function openPrompter(){var c=cards.find(function(x){return x.id===current;});if(!c)return;var hooks=(c.hooks||[]).filter(Boolean);document.getElementById("p-body").innerHTML=(hooks.length?'<div class="hk">'+esc(hooks[0])+'</div>':"")+md(c.body);document.getElementById("p-body").style.fontSize=pSize+"px";document.getElementById("p-body").scrollTop=0;document.getElementById("prompter").classList.add("on");try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock("portrait").catch(function(){});}catch(e){}}
+function closePrompter(){document.getElementById("prompter").classList.remove("on");if(pTimer){clearInterval(pTimer);pTimer=null;document.getElementById("p-scroll").textContent="Auto-scroll";}}
+function pFont(d){pSize=Math.max(18,Math.min(60,pSize+d));document.getElementById("p-body").style.fontSize=pSize+"px";}
+function pScroll(){var b=document.getElementById("p-body");if(pTimer){clearInterval(pTimer);pTimer=null;document.getElementById("p-scroll").textContent="Auto-scroll";return;}document.getElementById("p-scroll").textContent="Stop";pTimer=setInterval(function(){b.scrollTop+=1;},40);}
+
+/* ───────────────────────── Google Drive upload (browser → Drive, resumable) ───────────────────────── */
+var driveToken=null,driveTokenExp=0,tokenClient=null;
+function getDriveToken(interactive){
+  return new Promise(function(resolve,reject){
+    if(driveToken&&Date.now()<driveTokenExp-60000)return resolve(driveToken);
+    if(!window.google||!google.accounts||!google.accounts.oauth2)return reject(new Error("Google sign-in library did not load. Check the connection and reload."));
+    if(!tokenClient){tokenClient=google.accounts.oauth2.initTokenClient({client_id:CFG.googleClientId,scope:CFG.driveScope,hint:me.email,callback:function(){}});}
+    tokenClient.callback=function(r){if(r&&r.access_token){driveToken=r.access_token;driveTokenExp=Date.now()+(r.expires_in||3600)*1000;resolve(driveToken);}else reject(new Error("Google did not grant Drive access: "+(r&&(r.error_description||r.error)||"unknown")));};
+    tokenClient.error_callback=function(e){reject(new Error("Drive permission window closed or blocked: "+(e&&e.type||"")));};
+    tokenClient.requestAccessToken({prompt:interactive?"consent":""});
+  });
+}
+async function dfetch(url,opts,what){
+  opts=opts||{};opts.headers=Object.assign({Authorization:"Bearer "+driveToken},opts.headers||{});
+  var r=await fetch(url,opts);
+  if(r.status===401){driveToken=null;throw new Error("Drive session expired. Tap upload again.");}
+  if(!r.ok){var t="";try{t=(await r.text()).slice(0,300);}catch(e){}throw new Error(what+": HTTP "+r.status+" "+t);}
+  return r;
+}
+async function ensureFolder(card,kind){
+  var key=kind==="raw"?"rawFolderId":"finishedFolderId",parent=kind==="raw"?CFG.drive.raw:CFG.drive.finished;
+  if(card[key])return card[key];
+  var name=slugify(card.title);
+  var r=await dfetch("https://www.googleapis.com/drive/v3/files?supportsAllDrives=true&fields=id",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:name,mimeType:"application/vnd.google-apps.folder",parents:[parent]})},"Could not create the Drive folder "+name);
+  var j=await r.json();var patch={};patch[key]=j.id;await window.hubUpdate(card.id,patch);card[key]=j.id;return j.id;
+}
+async function driveUpload(file,parentId,name,onProgress){
+  var start=await dfetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true&fields=id,name,size",{method:"POST",headers:{"Content-Type":"application/json; charset=UTF-8","X-Upload-Content-Type":file.type||"application/octet-stream","X-Upload-Content-Length":String(file.size)},body:JSON.stringify({name:name,parents:[parentId]})},"Could not start the upload");
+  var loc=start.headers.get("Location");
+  if(!loc)throw new Error("Drive did not return an upload session (Location header missing). This is the CORS case the spike checks for.");
+  var CH=8*1024*1024,off=0,result=null,tries=0;
+  while(off<file.size){
+    var end=Math.min(off+CH,file.size);
+    var res=await fetch(loc,{method:"PUT",headers:{"Content-Range":"bytes "+off+"-"+(end-1)+"/"+file.size},body:file.slice(off,end)});
+    if(res.status===308){var rg=res.headers.get("Range");off=rg?parseInt(rg.split("-")[1],10)+1:end;tries=0;}
+    else if(res.ok){result=await res.json();off=file.size;}
+    else if((res.status>=500||res.status===0)&&tries<5){tries++;await new Promise(function(r){setTimeout(r,1500*tries);});continue;}
+    else{var t="";try{t=(await res.text()).slice(0,300);}catch(e){}throw new Error("Upload stopped at "+fmtSize(off)+" of "+fmtSize(file.size)+": HTTP "+res.status+" "+t);}
+    onProgress(off/file.size);
+  }
+  return result;
+}
+async function uploadFiles(input,kind,cardId){
+  var files=Array.prototype.slice.call(input.files||[]);input.value="";if(!files.length)return;
+  var card=cards.find(function(x){return x.id===cardId;});if(!card)return;
+  var box=document.getElementById("up-"+kind);
+  try{await getDriveToken(false);}catch(e){try{await getDriveToken(true);}catch(e2){box.innerHTML='<div class="up-row err">'+esc(e2.message)+'</div>';toast(e2.message,true);return;}}
+  var folder;try{folder=await ensureFolder(card,kind);}catch(e){box.innerHTML='<div class="up-row err">'+esc(e.message)+'</div>';toast(e.message,true);return;}
+  var slug=slugify(card.title),stamp=today();
+  for(var i=0;i<files.length;i++){
+    var f=files[i],row=document.createElement("div");row.className="up-row";row.innerHTML='<div>'+esc(f.name)+' <span class="muted">'+esc(fmtSize(f.size))+'</span></div><div class="prog"><i></i></div>';box.appendChild(row);
+    var bar=row.querySelector("i");
+    var name=slug+"__"+stamp+"__"+f.name;
+    try{
+      var r=await driveUpload(f,folder,name,function(p){bar.style.width=Math.round(p*100)+"%";});
+      var entry={id:r.id,name:name,size:f.size,by:me.email,at:Date.now()};
+      await window.hubAppend(card.id,kind==="raw"?"footage":"finished",entry);
+      row.innerHTML='<div>✓ '+esc(name)+' <span class="muted">'+esc(fmtSize(f.size))+'</span></div>';
+    }catch(e){row.className="up-row err";row.innerHTML='<div>✗ '+esc(f.name)+': '+esc(e.message)+'</div>';toast("Upload failed: "+e.message,true);}
+  }
+  toast("Upload done. "+files.length+" file"+(files.length>1?"s":"")+" in Drive.");
+}
+
+/* ───────────────────────── actions (filled in by the module below) ───────────────────────── */
+function setStatus(s){window.hubUpdate(current,{status:s}).then(function(){toast("Moved to "+statusOf(s).label);}).catch(function(e){toast("Could not move the card: "+e.message,true);});}
+function markFilmed(){var c=cards.find(function(x){return x.id===current;});if(!c)return;if(!(c.footage||[]).length&&!confirm("No footage has been uploaded for this one yet. Mark it filmed anyway?"))return;setStatus("filmed");}
+function sendForReview(){var c=cards.find(function(x){return x.id===current;});if(!c)return;if(!(c.finished||[]).length&&!confirm("No finished file is attached. Send for review anyway?"))return;setStatus("review");}
+function addNote(){var i=document.getElementById("note-input"),t=(i.value||"").trim();if(!t)return;i.value="";window.hubAppend(current,"notes",{by:me.email,at:Date.now(),text:t}).catch(function(e){toast("Could not post the note: "+e.message,true);});}
+
+/* ───────────────────────── editor (admin) ───────────────────────── */
+var editingId=null;
+var FIELDS=["title","format","status","kpi","priority","filmDate","postDate","hook1","hook2","hook3","body","exampleUrl","keyword","location","minutes","props","broll","music","editorNotes"];
+function openEditor(id){
+  if(role!=="admin")return;
+  editingId=id;var f=document.getElementById("e-form");f.reset();
+  document.getElementById("e-status").innerHTML=STATUSES.map(function(s){return'<option value="'+s.id+'">'+esc(s.label)+'</option>';}).join("");
+  document.getElementById("e-title").textContent=id?"Edit script":"New script";
+  document.getElementById("e-danger").classList.toggle("hidden",!id);
+  if(id&&!cards.some(function(x){return x.id===id;})){toast("That card does not exist.",true);return;}
+  if(id){var c=cards.find(function(x){return x.id===id;});FIELDS.forEach(function(k){var el=f.elements[k];if(!el)return;if(k==="hook1")el.value=(c.hooks||[])[0]||"";else if(k==="hook2")el.value=(c.hooks||[])[1]||"";else if(k==="hook3")el.value=(c.hooks||[])[2]||"";else el.value=c[k]==null?"":c[k];});if(!f.elements.format.value)f.elements.format.value="reel";if(!f.elements.status.value)f.elements.status.value="scripting";if(!f.elements.priority.value)f.elements.priority.value="2";}
+  else{f.elements.status.value="ready";f.elements.format.value="reel";}
+  document.getElementById("editor").classList.add("on");document.getElementById("overlay").classList.add("on");
+}
+function closeEditor(){document.getElementById("editor").classList.remove("on");if(!current)document.getElementById("overlay").classList.remove("on");}
+async function saveEditor(){
+  var f=document.getElementById("e-form");if(!f.elements.title.value.trim())return toast("A title is required.",true);
+  var d={};FIELDS.forEach(function(k){var el=f.elements[k];if(el&&["hook1","hook2","hook3"].indexOf(k)<0)d[k]=el.value.trim();});
+  d.hooks=[f.elements.hook1.value.trim(),f.elements.hook2.value.trim(),f.elements.hook3.value.trim()];
+  d.priority=parseInt(d.priority,10)||2;d.minutes=d.minutes?parseInt(d.minutes,10):null;
+  try{if(editingId)await window.hubUpdate(editingId,d);else{var id=await window.hubCreate(d);current=id;}closeEditor();toast("Saved.");if(current)openCard(current);}catch(e){toast("Save failed: "+e.message,true);}
+}
+async function deleteCurrent(){if(!editingId||!confirm("Delete this card for everyone? The Drive files stay."))return;try{await window.hubDelete(editingId);closeEditor();closeDrawer();toast("Deleted.");}catch(e){toast("Delete failed: "+e.message,true);}}
+
+/* ───────────────────────── sign-in (stub until Firebase loads) ───────────────────────── */
+function hubSignIn(){toast("Sign-in is not switched on yet. Patrick pastes the Firebase config (README, step 0).",true);}
+document.getElementById("auth-btn").onclick=function(){hubSignIn();};
+(function(){
+  /* Demo mode for previews and QA: ?demo=talent|editor|admin loads demo-cards.json, nothing is saved. */
+  var q=new URLSearchParams(location.search),demo=q.get("demo");
+  if(demo&&!window.FIREBASE_CONFIG){
+    window.DEMO=true;me={email:"demo@example.com",displayName:"Demo "+demo};role=["talent","editor","admin"].indexOf(demo)>=0?demo:"talent";
+    document.getElementById("banner").innerHTML='<div class="banner warn"><b>Preview mode</b> as '+esc(role)+'. Sample cards, nothing saves, uploads are off.</div>';
+    document.getElementById("auth-btn").textContent="Preview";document.getElementById("auth-btn").disabled=true;
+    document.getElementById("user-chip").classList.remove("hidden");document.getElementById("user-chip").innerHTML="<b>Demo</b> · "+esc(role);
+    document.getElementById("tabs").classList.remove("hidden");document.getElementById("new-btn").classList.toggle("hidden",role!=="admin");
+    window.hubUpdate=function(id,p){var c=cards.find(function(x){return x.id===id;});Object.assign(c,p);render();return Promise.resolve();};
+    window.hubAppend=function(id,f,e){var c=cards.find(function(x){return x.id===id;});(c[f]=c[f]||[]).push(e);render();return Promise.resolve();};
+    window.hubCreate=function(d){var id="demo-"+Date.now();cards.push(Object.assign({id:id,footage:[],finished:[],notes:[]},d));render();return Promise.resolve(id);};
+    window.hubDelete=function(id){cards=cards.filter(function(x){return x.id!==id;});render();return Promise.resolve();};
+    fetch("demo-cards.json").then(function(r){return r.json();}).then(function(j){cards=j;var h=(location.hash||"").replace("#","");showView(["queue","pipeline","resources"].indexOf(h)>=0?h:(role==="talent"?"queue":"pipeline"));}).catch(function(e){document.getElementById("banner").innerHTML='<div class="banner err">Preview could not load demo-cards.json: '+esc(e.message)+'</div>';});
+    return;
+  }
+  if(!window.FIREBASE_CONFIG){
+    document.getElementById("gate-note").textContent="Sign-in is not switched on yet. Patrick pastes the Firebase config (README, step 0).";
+    document.getElementById("auth-btn").disabled=true;
+  }
+})();
+</script>
+
+<script type="module">
+if(window.FIREBASE_CONFIG){
+  const [{initializeApp},{getFirestore,collection,doc,addDoc,updateDoc,deleteDoc,onSnapshot,arrayUnion,serverTimestamp},{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut}]=await Promise.all([
+    import("https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js"),
+    import("https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js")
+  ]);
+  const app=initializeApp(window.FIREBASE_CONFIG),db=getFirestore(app),auth=getAuth(app),provider=new GoogleAuthProvider();
+  provider.setCustomParameters({prompt:"select_account"});
+  let unsub=null;
+  window.hubSignIn=async function(){try{await signInWithPopup(auth,provider);}catch(e){if(e&&/popup/i.test(String(e.code))){try{await signInWithRedirect(auth,provider);}catch(e2){toast("Sign-in failed: "+e2.message,true);}}else toast("Sign-in failed or was cancelled.",true);}};
+  function paintAuth(){
+    const btn=document.getElementById("auth-btn"),chip=document.getElementById("user-chip");
+    btn.disabled=false;
+    if(me){btn.textContent="Sign out";btn.onclick=()=>signOut(auth);chip.classList.remove("hidden");chip.innerHTML="<b>"+esc((me.displayName||me.email).split(" ")[0])+"</b> · "+esc(role||"not on the list");}
+    else{btn.textContent="Sign in";btn.onclick=window.hubSignIn;chip.classList.add("hidden");}
+  }
+  onAuthStateChanged(auth,function(u){
+    me=u;role=u?(CFG.roles[(u.email||"").toLowerCase()]||null):null;
+    if(unsub){unsub();unsub=null;}cards=[];
+    paintAuth();
+    document.getElementById("tabs").classList.toggle("hidden",!(me&&role));
+    document.getElementById("new-btn").classList.toggle("hidden",role!=="admin");
+    if(!me){showView("gate");return;}
+    if(!role){showView("gate");document.getElementById("gate-note").innerHTML="Signed in as <b>"+esc(me.email)+"</b>, which is not on the Hub's list. Ask Patrick to add it, then sign in again.";document.getElementById("banner").innerHTML="";return;}
+    unsub=onSnapshot(collection(db,"scripts"),snap=>{cards=snap.docs.map(d=>Object.assign({id:d.id},d.data()));document.getElementById("banner").innerHTML="";render();},err=>{console.error(err);document.getElementById("banner").innerHTML='<div class="banner err"><b>Could not load the board.</b> '+esc(err.code||err.message)+'. Your address may not be in firestore.rules yet; ask Patrick.</div>';});
+    const h=(location.hash||"").replace("#","");
+    showView(["queue","pipeline","resources"].includes(h)?h:(role==="talent"?"queue":"pipeline"));
+  });
+  const stamp=()=>({updatedAt:Date.now(),updatedBy:me.email});
+  window.hubUpdate=(id,patch)=>updateDoc(doc(db,"scripts",id),Object.assign({},patch,stamp()));
+  window.hubAppend=(id,field,entry)=>{const p={};p[field]=arrayUnion(entry);return updateDoc(doc(db,"scripts",id),Object.assign(p,stamp()));};
+  window.hubCreate=async d=>{const r=await addDoc(collection(db,"scripts"),Object.assign({},d,{footage:[],finished:[],notes:[],createdAt:Date.now(),createdBy:me.email},stamp()));return r.id;};
+  window.hubDelete=id=>deleteDoc(doc(db,"scripts",id));
+}
+</script>
+</body>
+</html>
