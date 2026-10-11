@@ -98,7 +98,7 @@ details.panel .body{margin-top:10px}
 
 /* pipeline */
 .board{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity}
-.col{flex:0 0 280px;scroll-snap-align:start;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;gap:8px;max-height:72vh}
+.col{flex:0 0 260px;scroll-snap-align:start;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;gap:8px;max-height:72vh}
 .col .colh{display:flex;align-items:center;gap:8px;padding:4px 4px 8px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase}
 .col .colh .n{margin-left:auto;color:var(--muted);font-weight:600}
 .col .cards{overflow-y:auto;display:flex;flex-direction:column;gap:8px}
@@ -110,6 +110,14 @@ details.panel .body{margin-top:10px}
 .kpi .l{font-size:12px;color:var(--muted);margin-top:2px}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .toolbar input,.toolbar select{font:inherit;font-size:14px;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--text)}
+.toolbar input{flex:1 1 180px;min-width:0}
+@media(max-width:899px){
+  .board{flex-direction:column;overflow:visible;scroll-snap-type:none;gap:18px}
+  .col{flex:none;max-height:none;background:transparent;border:0;padding:0;border-radius:0}
+  .col .colh{padding:0 0 8px}
+  .col .cards{overflow:visible}
+  .kpi{padding:10px}.kpi .v{font-size:26px}.kpi .l{font-size:11px}
+}
 
 /* resources */
 .res-group{margin-bottom:18px}
@@ -239,6 +247,7 @@ select.status{font:inherit;font-size:14px;padding:9px 12px;border-radius:10px;bo
       <button id="new-btn" class="btn primary sm hidden" onclick="openEditor(null)">+ New script</button>
     </div>
     <div class="board" id="board"></div>
+    <p class="muted small" id="board-empties" style="margin:6px 0 0"></p>
   </section>
 
   <!-- resources -->
@@ -334,7 +343,7 @@ var STATUSES=[
 ];
 var FORMAT_LABEL={reel:"Reel",carousel:"Carousel",story:"Story",youtube:"YouTube"};
 var KPI_LABEL={storytelling:"Storytelling",tof:"Top of funnel",explanation:"Explanation"};
-var current=null, cards=[], me=null, role=null, view=null;
+var current=null, cards=[], me=null, role=null, view=null, loaded=false;
 
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 function statusOf(id){return STATUSES.find(function(s){return s.id===id;})||STATUSES[0];}
@@ -391,12 +400,12 @@ window.addEventListener("hashchange",function(){hashOpened=false;var m=(location
 document.querySelectorAll("nav.tabs button").forEach(function(b){b.onclick=function(){showView(b.dataset.view);};});
 
 function sortCards(list){return list.slice().sort(function(a,b){return(a.priority||2)-(b.priority||2)||String(a.postDate||"9").localeCompare(String(b.postDate||"9"))||String(a.title).localeCompare(String(b.title));});}
-function cardHtml(c,compact){
+function cardHtml(c,compact,noStatus){
   var st=statusOf(c.status);
   var hook=(c.hooks||[]).find(Boolean)||"";
   var files=(c.footage||[]).length;
   return'<div class="card" onclick="openCard(\''+esc(c.id)+'\')">'+
-    '<div class="top"><span class="tag '+st.tag+'">'+esc(st.label)+'</span><span class="tag">'+esc(FORMAT_LABEL[c.format]||c.format||"")+'</span>'+(c.priority===1?'<span class="tag red">High</span>':"")+'</div>'+
+    '<div class="top">'+(noStatus?"":'<span class="tag '+st.tag+'">'+esc(st.label)+'</span>')+'<span class="tag">'+esc(FORMAT_LABEL[c.format]||c.format||"")+'</span>'+(c.priority===1?'<span class="tag red">High</span>':"")+(c.kpi&&role==="admin"?'<span class="tag">'+esc(KPI_LABEL[c.kpi])+'</span>':"")+'</div>'+
     '<h3>'+esc(c.title)+'</h3>'+(hook&&!compact?'<div class="hook">'+esc(hook)+'</div>':"")+
     '<div class="meta">'+(c.filmDate?'<span>Film by '+esc(fmtDate(c.filmDate))+'</span>':"")+(c.postDate?'<span>Post '+esc(fmtDate(c.postDate))+'</span>':"")+(c.minutes?'<span>~'+esc(c.minutes)+' min</span>':"")+(files?'<span>'+files+' file'+(files>1?"s":"")+'</span>':"")+'</div>'+
   '</div>';
@@ -409,7 +418,7 @@ function render(){
     document.getElementById("queue-num").textContent=ready.length;
     document.getElementById("queue-head").textContent=ready.length===1?"script ready to film":"scripts ready to film";
     var g=document.getElementById("queue-grid");
-    g.innerHTML=ready.length?ready.map(function(c){return cardHtml(c);}).join(""):'<div class="empty">Nothing in the queue. Patrick adds scripts here; you will see them the moment they are marked Ready to film.</div>';
+    g.innerHTML=!loaded?'<div class="empty">Loading the board…</div>':ready.length?ready.map(function(c){return cardHtml(c,false,true);}).join(""):'<div class="empty">Nothing in the queue. Patrick adds scripts here; you will see them the moment they are marked Ready to film.</div>';
     var done=sortCards(cards.filter(function(c){return["filmed","editing","review"].indexOf(c.status)>=0;}));
     document.getElementById("queue-done-grid").innerHTML=done.length?done.map(function(c){return cardHtml(c,true);}).join(""):'<div class="empty">Nothing filmed yet this cycle.</div>';
     document.getElementById("film-checklist").innerHTML=(CFG.filmChecklist||[]).map(function(t){return"<li>"+esc(t)+"</li>";}).join("");
@@ -421,10 +430,13 @@ function render(){
     cards.forEach(function(c){if(c.kpi&&counts[c.kpi]!=null&&c.postDate&&c.postDate>=wk[0]&&c.postDate<=wk[1]&&["scheduled","posted"].indexOf(c.status)>=0)counts[c.kpi]++;});
     var targets={storytelling:2,tof:3,explanation:2};
     document.getElementById("kpis").innerHTML=Object.keys(targets).map(function(k){return'<div class="kpi"><div class="v '+(counts[k]>=targets[k]?"ok":"low")+'">'+counts[k]+'<span class="muted" style="font-size:18px"> / '+targets[k]+'</span></div><div class="l">'+esc(KPI_LABEL[k])+' this week</div></div>';}).join("");
-    document.getElementById("board").innerHTML=STATUSES.map(function(s){
+    var empties=[];
+    document.getElementById("board").innerHTML=!loaded?'<div class="empty" style="flex:1">Loading the board…</div>':STATUSES.map(function(s){
       var items=sortCards(list.filter(function(c){return c.status===s.id;}));
-      return'<div class="col"><div class="colh"><span class="tag '+s.tag+'">'+esc(s.label)+'</span><span class="n">'+items.length+'</span></div><div class="cards">'+items.map(function(c){return cardHtml(c,true);}).join("")+'</div></div>';
-    }).join("");
+      if(!items.length){empties.push(s.label);return"";}
+      return'<div class="col"><div class="colh"><span class="tag '+s.tag+'">'+esc(s.label)+'</span><span class="n">'+items.length+'</span></div><div class="cards">'+items.map(function(c){return cardHtml(c,true,true);}).join("")+'</div></div>';
+    }).join("")||'<div class="empty" style="flex:1">'+(cards.length?"No cards match that search.":"No cards yet.")+'</div>';
+    document.getElementById("board-empties").textContent=loaded&&empties.length&&empties.length<STATUSES.length?"Empty stages: "+empties.join(", "):"";
   }
   if(view==="resources"){
     document.getElementById("res").innerHTML=(CFG.resources||[]).map(function(g){
@@ -600,7 +612,7 @@ document.getElementById("auth-btn").onclick=function(){hubSignIn();};
 (function(){
   /* Demo mode for previews and QA: ?demo=talent|editor|admin loads demo-cards.json, nothing is saved. */
   var q=new URLSearchParams(location.search),demo=q.get("demo");
-  if(demo&&!window.FIREBASE_CONFIG){
+  if(demo){
     window.DEMO=true;me={email:"demo@example.com",displayName:"Demo "+demo};role=["talent","editor","admin"].indexOf(demo)>=0?demo:"talent";
     document.getElementById("banner").innerHTML='<div class="banner warn"><b>Preview mode</b> as '+esc(role)+'. Sample cards, nothing saves, uploads are off.</div>';
     document.getElementById("auth-btn").textContent="Preview";document.getElementById("auth-btn").disabled=true;
@@ -610,7 +622,7 @@ document.getElementById("auth-btn").onclick=function(){hubSignIn();};
     window.hubAppend=function(id,f,e){var c=cards.find(function(x){return x.id===id;});(c[f]=c[f]||[]).push(e);render();return Promise.resolve();};
     window.hubCreate=function(d){var id="demo-"+Date.now();cards.push(Object.assign({id:id,footage:[],finished:[],notes:[]},d));render();return Promise.resolve(id);};
     window.hubDelete=function(id){cards=cards.filter(function(x){return x.id!==id;});render();return Promise.resolve();};
-    fetch("demo-cards.json").then(function(r){return r.json();}).then(function(j){cards=j;var h=(location.hash||"").replace("#","");showView(["queue","pipeline","resources"].indexOf(h)>=0?h:(role==="talent"?"queue":"pipeline"));}).catch(function(e){document.getElementById("banner").innerHTML='<div class="banner err">Preview could not load demo-cards.json: '+esc(e.message)+'</div>';});
+    fetch("demo-cards.json").then(function(r){return r.json();}).then(function(j){cards=j;loaded=true;var h=(location.hash||"").replace("#","");showView(["queue","pipeline","resources"].indexOf(h)>=0?h:(role==="talent"?"queue":"pipeline"));}).catch(function(e){document.getElementById("banner").innerHTML='<div class="banner err">Preview could not load demo-cards.json: '+esc(e.message)+'</div>';});
     return;
   }
   if(!window.FIREBASE_CONFIG){
@@ -621,7 +633,7 @@ document.getElementById("auth-btn").onclick=function(){hubSignIn();};
 </script>
 
 <script type="module">
-if(window.FIREBASE_CONFIG){
+if(window.FIREBASE_CONFIG&&!window.DEMO){
   const [{initializeApp},{getFirestore,collection,doc,addDoc,updateDoc,deleteDoc,onSnapshot,arrayUnion,serverTimestamp},{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,onAuthStateChanged,signOut}]=await Promise.all([
     import("https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js"),
     import("https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js"),
@@ -639,13 +651,13 @@ if(window.FIREBASE_CONFIG){
   }
   onAuthStateChanged(auth,function(u){
     me=u;role=u?(CFG.roles[(u.email||"").toLowerCase()]||null):null;
-    if(unsub){unsub();unsub=null;}cards=[];
+    if(unsub){unsub();unsub=null;}cards=[];loaded=false;
     paintAuth();
     document.getElementById("tabs").classList.toggle("hidden",!(me&&role));
     document.getElementById("new-btn").classList.toggle("hidden",role!=="admin");
-    if(!me){showView("gate");return;}
+    if(!me){showView("gate");if(/^#card\//.test(location.hash))document.getElementById("gate-note").textContent="You were sent a link to a script. Sign in and it opens.";return;}
     if(!role){showView("gate");document.getElementById("gate-note").innerHTML="Signed in as <b>"+esc(me.email)+"</b>, which is not on the Hub's list. Ask Patrick to add it, then sign in again.";document.getElementById("banner").innerHTML="";return;}
-    unsub=onSnapshot(collection(db,"scripts"),snap=>{cards=snap.docs.map(d=>Object.assign({id:d.id},d.data()));document.getElementById("banner").innerHTML="";render();},err=>{console.error(err);document.getElementById("banner").innerHTML='<div class="banner err"><b>Could not load the board.</b> '+esc(err.code||err.message)+'. Your address may not be in firestore.rules yet; ask Patrick.</div>';});
+    unsub=onSnapshot(collection(db,"scripts"),snap=>{cards=snap.docs.map(d=>Object.assign({id:d.id},d.data()));loaded=true;document.getElementById("banner").innerHTML="";render();openFromHash();},err=>{console.error(err);document.getElementById("banner").innerHTML='<div class="banner err"><b>Could not load the board.</b> '+esc(err.code||err.message)+'. Your address may not be in firestore.rules yet; ask Patrick.</div>';});
     const h=(location.hash||"").replace("#","");
     showView(["queue","pipeline","resources"].includes(h)?h:(role==="talent"?"queue":"pipeline"));
   });
